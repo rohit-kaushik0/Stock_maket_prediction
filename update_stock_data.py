@@ -6,12 +6,16 @@ tickers = {
     'AMZN': 'amzn',
     'DPZ': 'dpz',
     'BTC-USD': 'btc',
-    'NFLX': 'nflx'
+    'NFLX': 'nflx',
+    'RELIANCE.NS': 'reliance',   # Indian stock - Reliance Industries
+    'INFY.NS': 'infosys',        # Indian stock - Infosys
+    'TCS.NS': 'tcs',             # Indian stock - Tata Consultancy Services
+    'HDFCBANK.NS': 'hdfc_bank'   # Indian stock - HDFC Bank
 }
 
 # Date range
 start_date = '2021-01-01'
-end_date = '2025-04-01'
+end_date = '2025-04-27'
 
 # Dictionary to hold each DataFrame
 data_frames = {}
@@ -25,14 +29,17 @@ for ticker, col_name in tickers.items():
 
 # Merge all DataFrames on the index (Date) using inner join to keep only common dates
 combined_df = data_frames['amzn']
-for col in ['dpz', 'btc', 'nflx']:
+for col in ['dpz', 'btc', 'nflx', 'reliance', 'infosys', 'tcs', 'hdfc_bank']:
     combined_df = combined_df.join(data_frames[col], how='inner')
 
 # Reset index to move Date into a column
 combined_df.reset_index(inplace=True)
 combined_df.rename(columns={'Date': 'date'}, inplace=True)
 
-# Save the result
-combined_df.to_csv("combined_closing_prices.csv", index=False)
+# Convert 'date' to the desired format (e.g., '1/3/2023')
+combined_df['date'] = combined_df['date'].dt.strftime('%m/%d/%Y')
 
-print("✅ Combined CSV saved as 'combined_closing_prices.csv'.")
+# Save the result to a CSV file
+combined_df.to_csv("combined_closing_prices_with_indian_stocks.csv", index=False)
+
+print("✅ Combined CSV saved as 'combined_closing_prices_with_indian_stocks.csv'.")
